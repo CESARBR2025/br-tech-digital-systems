@@ -1,3 +1,4 @@
+import { sendWhatsAppMessage } from "@/lib/whatsapp";
 import { NextRequest, NextResponse } from "next/server";
 
 // Token que tú defines en Meta
@@ -22,15 +23,38 @@ export async function GET(req: NextRequest) {
   return new NextResponse("Forbidden", { status: 403 });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const body = await req.json();
 
-  console.log("📩 Mensaje de WhatsApp:", JSON.stringify(body, null, 2));
+  try {
+    const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-  // Aquí después:
-  // - guardar en DB
-  // - responder automático
-  // - enviar a frontend real-time
+    if (!message) {
+      return Response.json({ ok: true });
+    }
 
-  return NextResponse.json({ ok: true });
+    const from = message.from;
+    const text = message.text?.body;
+
+    console.log("📩 Mensaje recibido:", text);
+
+    // 🤖 BOT SIMPLE
+    let reply = "No entendí tu mensaje 🤔";
+
+    if (text?.toLowerCase().includes("hola")) {
+      reply = "👋 Hola! Bienvenido a BR TECH SJR";
+    }
+
+    if (text?.toLowerCase().includes("precio")) {
+      reply = "💰 Claro, dime qué producto necesitas";
+    }
+
+    // 📤 RESPONDER
+    await sendWhatsAppMessage(from, reply);
+
+    return Response.json({ ok: true });
+  } catch (error) {
+    console.error("ERROR WEBHOOK:", error);
+    return Response.json({ ok: false }, { status: 500 });
+  }
 }
