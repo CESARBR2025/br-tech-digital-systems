@@ -24,43 +24,32 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
-  console.log("🔥 ENTRÓ AL WEBHOOK POST");
   const body = await req.json();
-  console.log("🚀 WEBHOOK HIT");
-  console.log("BODY:", JSON.stringify(body, null, 2));
 
-  try {
-    const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+  // 1. Extraer datos del mensaje
+  const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+  const business_id =
+    body.entry?.[0]?.changes?.[0]?.value?.metadata?.phone_number_id;
 
-    if (!message) {
-      return Response.json({ ok: true });
-    }
+  if (message) {
+    const sender = message.from; // El número que te escribió
+    const text = message.text?.body; // Lo que te escribió
 
-    const from = message.from;
-    const text = message.text?.body;
-    console.log("📩 MENSAJE:", text);
-    console.log("📤 ENVIANDO RESPUESTA A:", from);
-
-    console.log("📩 Mensaje recibido:", text);
-
-    // 🤖 BOT SIMPLE
-    let reply = "No entendí tu mensaje 🤔";
-
-    if (text?.toLowerCase().includes("hola")) {
-      reply = "👋 Hola! Bienvenido a BR TECH SJR";
-    }
-
-    if (text?.toLowerCase().includes("precio")) {
-      reply = "💰 Claro, dime qué producto necesitas";
-    }
-
-    // 📤 RESPONDER
-    const result = await sendWhatsAppMessage(from, reply);
-    console.log("📤 SEND RESULT:s", result);
-
-    return Response.json({ ok: true });
-  } catch (error) {
-    console.error("ERROR WEBHOOK:", error);
-    return Response.json({ ok: false }, { status: 500 });
+    // 2. Responder al mensaje
+    await fetch(`https://graph.facebook.com/v21.0/${business_id}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: sender,
+        type: "text",
+        text: { body: `Recibí tu mensaje: "${text}". Soy un bot.` },
+      }),
+    });
   }
+
+  return NextResponse.json({ status: "ok" }, { status: 200 });
 }
