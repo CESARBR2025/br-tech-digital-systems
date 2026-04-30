@@ -24,9 +24,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
-  console.log("🚀 WEBHOOK HIT:", new Date().toISOString());
   console.log("🔥 ENTRÓ AL WEBHOOK POST");
   const body = await req.json();
+  console.log("🚀 WEBHOOK HIT");
+  console.log("BODY:", JSON.stringify(body, null, 2));
 
   try {
     const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];

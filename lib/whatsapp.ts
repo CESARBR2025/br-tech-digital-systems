@@ -1,8 +1,6 @@
 export async function sendWhatsAppMessage(to: string, message: string) {
   const token = process.env.WHATSAPP_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  console.log("TOKEN:", process.env.WHATSAPP_TOKEN);
-  console.log("PHONE ID:", process.env.WHATSAPP_PHONE_NUMBER_ID);
 
   const url = `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`;
 
@@ -21,10 +19,10 @@ export async function sendWhatsAppMessage(to: string, message: string) {
   });
 
   const data = await res.json();
-  console.log("📤 STATUS:", res.status);
-  console.log("📤 RESPONSE:", data);
 
-  console.log("📤 WhatsApp API response:", data);
+  // 🔥 ESTO ES LO QUE TE FALTABA
+  console.log("📤 STATUS:", res.status);
+  console.log("📤 RESPONSE:", JSON.stringify(data, null, 2));
 
   return data;
 }
