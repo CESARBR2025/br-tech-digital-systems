@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
+  console.log("🔥 ENTRÓ AL WEBHOOK POST");
   const body = await req.json();
 
   try {
@@ -35,6 +36,8 @@ export async function POST(req: Request) {
 
     const from = message.from;
     const text = message.text?.body;
+    console.log("📩 MENSAJE:", text);
+    console.log("📤 ENVIANDO RESPUESTA A:", from);
 
     console.log("📩 Mensaje recibido:", text);
 
