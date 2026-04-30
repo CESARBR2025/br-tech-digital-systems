@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     // 📤 RESPONDER
     const result = await sendWhatsAppMessage(from, reply);
-    console.log("📤 SEND RESULT:", result);
+    console.log("📤 SEND RESULT:s", result);
 
     return Response.json({ ok: true });
   } catch (error) {
