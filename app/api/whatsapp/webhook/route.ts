@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
+  console.log("🚀 WEBHOOK HIT:", new Date().toISOString());
   console.log("🔥 ENTRÓ AL WEBHOOK POST");
   const body = await req.json();
 
